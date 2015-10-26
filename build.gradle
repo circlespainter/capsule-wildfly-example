@@ -59,7 +59,7 @@ task fatCapsule(type: Jar, dependsOn: fetch) {
     }
 }
 
-task ._(type: Jar, dependsOn: fetch) {
+task shieldEmbeddedFatCapsule(type: Jar, dependsOn: fetch) {
     archiveName = "capsule-wildfly-example-shield.jar"
 
     from 'boot-shield.sh'
