@@ -6,14 +6,14 @@ status              = 'integration'
 description         = 'Capsule WildFly Example'
 
 ext.capsuleVer  = '1.0.1'
-ext.capsuleMavenVer  = '1.0'
+// ext.capsuleMavenVer  = '1.0'
 ext.capsuleShieldVer  = '0.2.0'
 
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 configurations {
     capsule
-    capsuleMaven
+//    capsuleMaven
     capsuleShield
 }
 
@@ -30,7 +30,7 @@ repositories {
 
 dependencies {
     capsule "co.paralleluniverse:capsule:$capsuleVer"
-    capsuleMaven "co.paralleluniverse:capsule-maven:$capsuleMavenVer"
+//    capsuleMaven "co.paralleluniverse:capsule-maven:$capsuleMavenVer"
     capsuleShield "co.paralleluniverse:capsule-shield:$capsuleShieldVer"
 }
 
@@ -53,11 +53,31 @@ task fetch {
 
 def wildflyZip = zipTree('wildfly-10.0.0.CR4.zip')
 
-task shieldEmbeddedFatCapsule(type: Jar, dependsOn: fetch) {
+task fatCapsule(type: Jar, dependsOn: fetch) {
     archiveName = "capsule-wildfly-example.jar"
 
-    from 'boot.sh'
-    // from 'boot.bat'
+    from wildflyZip // embed our application server
+    from { configurations.runtime } // embed dependencies
+
+    from(configurations.capsule.collect { zipTree(it) }) { include 'Capsule.class' } // we just need the single Capsule class
+
+    manifest {
+        attributes(['Application-Script': 'wildfly-10.0.0.CR4/bin/standalone.sh'], "POSIX")
+        // attributes(['Application-Script': 'wildfly-10.0.0.CR4/bin/standalone.bat'], "Windows")
+        attributes ([
+            // 'Premain-Class': 'Capsule',
+            'Main-Class': 'Capsule',
+            'Application-Name': 'capsule-wildfly-example',
+            'Application-Version': version
+        ])
+    }
+}
+
+task ._(type: Jar, dependsOn: fetch) {
+    archiveName = "capsule-wildfly-example-shield.jar"
+
+    from 'boot-shield.sh'
+    // from 'boot-shield.bat'
 
     from wildflyZip // embed our application server
     from { configurations.runtime } // embed dependencies
@@ -66,16 +86,16 @@ task shieldEmbeddedFatCapsule(type: Jar, dependsOn: fetch) {
     from { configurations.capsuleShield.iterator().next() } // we need the Capsule Shield JAR
 
     manifest {
-        attributes(['Application-Script': 'boot.sh'], "POSIX")
-        // attributes(['Application-Script': 'boot.bat'], "Windows")
+        attributes(['Application-Script': 'boot-shield.sh'], "POSIX")
+        // attributes(['Application-Script': 'boot-shield.bat'], "Windows")
         attributes ([
             // 'Premain-Class': 'Capsule',
             'Main-Class': 'Capsule',
-            'Application-Name': 'capsule-wildfly-example',
+            'Application-Name': 'capsule-wildfly-example-shield',
             'Application-Version': version,
             'Caplets': "co.paralleluniverse:capsule-shield:$capsuleShieldVer"
         ])
     }
 }
 
-defaultTasks 'shieldEmbeddedFatCapsule'
+defaultTasks 'fatCapsule'
