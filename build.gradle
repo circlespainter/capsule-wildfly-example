@@ -1,0 +1,81 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+version             = '0.1.0-SNAPSHOT'
+status              = 'integration'
+description         = 'Capsule WildFly Example'
+
+ext.capsuleVer  = '1.0.1'
+ext.capsuleMavenVer  = '1.0'
+ext.capsuleShieldVer  = '0.2.0'
+
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+configurations {
+    capsule
+    capsuleMaven
+    capsuleShield
+}
+
+configurations.all {
+    resolutionStrategy {
+        failOnVersionConflict()
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    capsule "co.paralleluniverse:capsule:$capsuleVer"
+    capsuleMaven "co.paralleluniverse:capsule-maven:$capsuleMavenVer"
+    capsuleShield "co.paralleluniverse:capsule-shield:$capsuleShieldVer"
+}
+
+def getDependencies(config) {
+	return config.getAllDependencies().collect {
+		def res = it.group + ':' + it.name + ':' + it.version
+		if(!it.excludeRules.isEmpty()) {
+			res += "(" + it.excludeRules.collect { it.group + ':' + it.module }.join(',') + ")"
+		}
+		return res
+	}
+}
+
+task fetch {
+  def f = new File('wildfly-10.0.0.CR4.zip')
+  if (!f.exists()) {
+    new URL('http://download.jboss.org/wildfly/10.0.0.CR4/wildfly-10.0.0.CR4.zip').withInputStream{ i -> f.withOutputStream{ it << i }}
+  }
+}
+
+def wildflyZip = zipTree('wildfly-10.0.0.CR4.zip')
+
+task shieldEmbeddedFatCapsule(type: Jar, dependsOn: fetch) {
+    archiveName = "capsule-wildfly-example.jar"
+
+    from 'boot.sh'
+    // from 'boot.bat'
+
+    from wildflyZip // embed our application server
+    from { configurations.runtime } // embed dependencies
+
+    from(configurations.capsule.collect { zipTree(it) }) { include 'Capsule.class' } // we just need the single Capsule class
+    from { configurations.capsuleShield.iterator().next() } // we need the Capsule Shield JAR
+
+    manifest {
+        attributes(['Application-Script': 'boot.sh'], "POSIX")
+        // attributes(['Application-Script': 'boot.bat'], "Windows")
+        attributes ([
+            // 'Premain-Class': 'Capsule',
+            'Main-Class': 'Capsule',
+            'Application-Name': 'capsule-wildfly-example',
+            'Application-Version': version,
+            'Caplets': "co.paralleluniverse:capsule-shield:$capsuleShieldVer"
+        ])
+    }
+}
+
+defaultTasks 'shieldEmbeddedFatCapsule'
