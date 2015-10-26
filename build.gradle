@@ -91,5 +91,7 @@ task shieldEmbeddedFatCapsule(type: Jar, dependsOn: fetch) {
 
 fatCapsule.dependsOn(":webapp1:war")
 fatCapsule.dependsOn(":webapp2:war")
+shieldEmbeddedFatCapsule.dependsOn(":webapp1:war")
+shieldEmbeddedFatCapsule.dependsOn(":webapp2:war")
 
 defaultTasks 'fatCapsule'
