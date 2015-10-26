@@ -55,7 +55,6 @@ task fatCapsule(type: Jar, dependsOn: fetch) {
         attributes(['Application-Script': 'wildfly-10.0.0.CR4/bin/standalone.sh'], "POSIX")
         // attributes(['Application-Script': 'wildfly-10.0.0.CR4/bin/standalone.bat'], "Windows")
         attributes ([
-            // 'Premain-Class': 'Capsule',
             'Main-Class': 'Capsule',
             'Application-Name': 'capsule-wildfly-example',
             'Application-Version': version
@@ -82,7 +81,6 @@ task shieldEmbeddedFatCapsule(type: Jar, dependsOn: fetch) {
         attributes(['Application-Script': 'boot-shield.sh'], "POSIX")
         // attributes(['Application-Script': 'boot-shield.bat'], "Windows")
         attributes ([
-            // 'Premain-Class': 'Capsule',
             'Main-Class': 'Capsule',
             'Application-Name': 'capsule-wildfly-example-shield',
             'Application-Version': version,
