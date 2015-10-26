@@ -44,7 +44,6 @@ task fatCapsule(type: Jar, dependsOn: fetch) {
     archiveName = "capsule-wildfly-example.jar"
 
     from wildflyZip // embed our application server
-    from { configurations.runtime } // embed dependencies
 
     from(configurations.capsule.collect { zipTree(it) }) { include 'Capsule.class' } // we just need the single Capsule class
 
@@ -67,7 +66,6 @@ task ._(type: Jar, dependsOn: fetch) {
     // from 'boot-shield.bat'
 
     from wildflyZip // embed our application server
-    from { configurations.runtime } // embed dependencies
 
     from(configurations.capsule.collect { zipTree(it) }) { include 'Capsule.class' } // we just need the single Capsule class
     from { configurations.capsuleShield.iterator().next() } // we need the Capsule Shield JAR
