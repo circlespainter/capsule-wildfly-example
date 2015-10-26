@@ -6,14 +6,12 @@ status              = 'integration'
 description         = 'Capsule WildFly Example'
 
 ext.capsuleVer  = '1.0.1'
-// ext.capsuleMavenVer  = '1.0'
 ext.capsuleShieldVer  = '0.2.0'
 
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 configurations {
     capsule
-//    capsuleMaven
     capsuleShield
 }
 
@@ -30,18 +28,7 @@ repositories {
 
 dependencies {
     capsule "co.paralleluniverse:capsule:$capsuleVer"
-//    capsuleMaven "co.paralleluniverse:capsule-maven:$capsuleMavenVer"
     capsuleShield "co.paralleluniverse:capsule-shield:$capsuleShieldVer"
-}
-
-def getDependencies(config) {
-	return config.getAllDependencies().collect {
-		def res = it.group + ':' + it.name + ':' + it.version
-		if(!it.excludeRules.isEmpty()) {
-			res += "(" + it.excludeRules.collect { it.group + ':' + it.module }.join(',') + ")"
-		}
-		return res
-	}
 }
 
 task fetch {
