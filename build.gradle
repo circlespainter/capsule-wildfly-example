@@ -44,6 +44,10 @@ task fatCapsule(type: Jar, dependsOn: fetch) {
     archiveName = "capsule-wildfly-example.jar"
 
     from wildflyZip // embed our application server
+    into("wildfly-10.0.0.CR4/standalone/deployments") {
+        from 'webapp1/build/libs/webapp1.war'
+        from 'webapp2/build/libs/webapp2.war'
+    }
 
     from(configurations.capsule.collect { zipTree(it) }) { include 'Capsule.class' } // we just need the single Capsule class
 
@@ -66,6 +70,10 @@ task shieldEmbeddedFatCapsule(type: Jar, dependsOn: fetch) {
     // from 'boot-shield.bat'
 
     from wildflyZip // embed our application server
+    into("wildfly-10.0.0.CR4/standalone/deployments") {
+        from 'webapp1/build/libs/webapp1.war'
+        from 'webapp2/build/libs/webapp2.war'
+    }
 
     from(configurations.capsule.collect { zipTree(it) }) { include 'Capsule.class' } // we just need the single Capsule class
     from { configurations.capsuleShield.iterator().next() } // we need the Capsule Shield JAR
@@ -82,5 +90,8 @@ task shieldEmbeddedFatCapsule(type: Jar, dependsOn: fetch) {
         ])
     }
 }
+
+fatCapsule.dependsOn(":webapp1:war")
+fatCapsule.dependsOn(":webapp2:war")
 
 defaultTasks 'fatCapsule'

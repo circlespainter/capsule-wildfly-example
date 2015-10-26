@@ -1,0 +1,24 @@
+apply plugin: 'java'
+apply plugin: 'war'
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile (
+            'org.springframework:spring-webmvc:4.1.5.RELEASE',
+            'org.slf4j:slf4j-api:1.7.12'
+    )
+    providedCompile(
+            'javax.servlet:javax.servlet-api:3.1.0',
+    )
+    runtime(
+            'log4j:log4j:1.2.17',
+            'org.slf4j:jcl-over-slf4j:1.7.12',
+            'org.slf4j:slf4j-log4j12:1.7.12'
+    )
+}
