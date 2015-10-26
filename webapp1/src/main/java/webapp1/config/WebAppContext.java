@@ -14,7 +14,7 @@ import org.springframework.web.servlet.view.JstlView;
  * @author Petri Kainulainen
  */
 @Configuration
-@ComponentScan("net.petrikainulainen.gradle.webapp.controller")
+@ComponentScan("webapp1.controller")
 @EnableWebMvc
 public class WebAppContext extends WebMvcConfigurerAdapter {
 
