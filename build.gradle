@@ -5,7 +5,7 @@ version             = '0.1.0-SNAPSHOT'
 status              = 'integration'
 description         = 'Capsule WildFly Example'
 
-ext.capsuleVer  = '1.0.1'
+ext.capsuleVer  = '1.0.2-SNAPSHOT'
 ext.capsuleShieldVer  = '0.3.0-SNAPSHOT'
 
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
